@@ -126,12 +126,14 @@ function recreateComposite() {
   local productId=$1
   local composite=$2
 
+  #curl -X DELETE http://$HOST:$PORT/product-composite/${productId} -s
   assertCurl 202 "curl -X DELETE http://$HOST:$PORT/product-composite/${productId} -s"
+  #curl -X POST -s http://$HOST:$PORT/product-composite -H "Content-Type: application/json" --data "$composite" -w "%{http_code}"
   assertEqual 202 $(curl -X POST -s http://$HOST:$PORT/product-composite -H "Content-Type: application/json" --data "$composite" -w "%{http_code}")
 }
 
 function setupTestdata() {
-
+  sleep 30
   body="{\"productId\":$PROD_ID_NO_RECS"
   body+=\
 ',"name":"product name A","weight":100, "reviews":[
@@ -141,6 +143,7 @@ function setupTestdata() {
 ]}'
   recreateComposite "$PROD_ID_NO_RECS" "$body"
 
+  sleep 30
   body="{\"productId\":$PROD_ID_NO_REVS"
   body+=\
 ',"name":"product name B","weight":200, "recommendations":[
@@ -150,6 +153,7 @@ function setupTestdata() {
 ]}'
   recreateComposite "$PROD_ID_NO_REVS" "$body"
 
+  sleep 30
   body="{\"productId\":$PROD_ID_REVS_RECS"
   body+=\
 ',"name":"product name C","weight":300, "recommendations":[
@@ -162,7 +166,6 @@ function setupTestdata() {
       {"reviewId":3,"author":"author 3","subject":"subject 3","content":"content 3"}
   ]}'
   recreateComposite "$PROD_ID_REVS_RECS" "$body"
-
 }
 
 set -e
